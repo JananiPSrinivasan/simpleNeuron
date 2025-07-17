@@ -1,4 +1,4 @@
-# RTL Design of a Configurable Neuron with Formal Verification
+# RTL Design of a Simple Neuron with Formal Verification
 
 This project implements a **simple neuron** module in **SystemVerilog**. The neuron performs a weighted sum of input values, adds a bias, and passes the result through a **tanh activation function** using a lookup table (LUT) and using CORDIC algorithm. The design is modular, parameterized, and supports **formal verification** to ensure correctness.
 
