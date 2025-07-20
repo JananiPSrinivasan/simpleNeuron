@@ -2,9 +2,9 @@
 
 module multiplier_tb();
 
-    logic [7:0] weight;
-    logic [7:0] in;
-    logic [8:0] out;
+    logic signed [7:0] weight;
+    logic signed [7:0] in;
+    logic signed [7:0] out;
 
     multiplier dut (
         .weight(weight),
@@ -18,7 +18,7 @@ module multiplier_tb();
         input logic signed [7:0]b
         );
         logic signed [15:0] temp;
-        logic signed[8:0] expected;
+        logic signed[7:0] expected;
 
         begin
             test_num ++;
