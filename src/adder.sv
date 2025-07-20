@@ -1,11 +1,13 @@
 module adder(
-    input logic [15:0] in1,
-    input logic [15:0] in2,
-    output logic [15:0] sum,
+    input logic [7:0] in1, //the output from multiplier
+    input logic [7:0] in2, //the bias
+    output logic [7:0] sum,
     output logic carry
 );
 
-    logic [15:0] carry_in;
+    logic [8:0] carry_in; //Why 9 bits ?
+    // when you add 2 8 bits, there will be an overflow. To handle the overflow
+    // you assign that one extra bit.
 
     half_adder ha0(
         .a(in1[0]),
@@ -16,8 +18,8 @@ module adder(
 
     genvar i;
     generate
-        for (i=1;i<16;i++) begin: full_adder_loop
-            full_adder fa1(
+        for (i=1;i<8;i++) begin
+            full_adder fa_inst(
                 .a(in1[i]),
                 .b(in2[i]),
                 .cin(carry_in[i-1]),
@@ -27,7 +29,7 @@ module adder(
 
         end
     endgenerate
-    assign carry = carry_in[15];
+    assign carry = carry_in[8];
     
 
 endmodule

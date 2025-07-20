@@ -35,7 +35,7 @@ module accumulate (
         end
     end
 
-    assign accu = accumulator;
+    assign accu = accumulator[15:8];
 
 endmodule
 
