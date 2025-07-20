@@ -1,0 +1,40 @@
+$date
+	Sun Jul 20 12:34:24 2025
+$end
+$version
+	Icarus Verilog
+$end
+$timescale
+	1ps
+$end
+$scope module adder_sim_tb $end
+$var wire 8 ! sum [7:0] $end
+$var wire 1 " carry $end
+$var reg 1 # clk $end
+$var reg 8 $ in1 [7:0] $end
+$var reg 8 % in2 [7:0] $end
+$scope module dut $end
+$var wire 8 & in1 [7:0] $end
+$var wire 8 ' in2 [7:0] $end
+$var wire 8 ( sum [7:0] $end
+$var wire 1 " carry $end
+$var reg 9 ) full_result [8:0] $end
+$upscope $end
+$upscope $end
+$enddefinitions $end
+$comment Show the parameter values. $end
+$dumpall
+$end
+#0
+$dumpvars
+b0 )
+b0 (
+b0 '
+b0 &
+b0 %
+b0 $
+0#
+0"
+b0 !
+$end
+#14
