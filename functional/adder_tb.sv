@@ -27,7 +27,7 @@ task test(input [7:0]a , input [7:0]b);
             $display ("Error \n Expected : %0d+%0d = 0%d \n Obtained : %0d+%0d = 0%d",a,b, expected, in1,in2,{carry,sum} );
         end 
         else begin 
-            $display ("Test cases passed!");
+            $display ("Test cases passed!\n Expected : %0d+%0d = 0%d \n Obtained : %0d+%0d = 0%d",a,b, expected, in1,in2,{carry,sum});
         end
 
     end
