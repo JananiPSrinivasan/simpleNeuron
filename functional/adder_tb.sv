@@ -4,7 +4,7 @@ module adder_tb();
 
 logic signed [7:0]  in1; 
 logic signed [15:0] in2;
-logic signed[15:0]  sum;
+logic signed[7:0]  sum;
 logic signed carry;
 
 adder dut (
@@ -18,17 +18,21 @@ task test(input logic signed[7:0]a,
           input logic signed [15:0]b
         );
 
-    //logic signed [15:0]in1_ext;    
-    logic signed[16:0] expected;
-    logic signed [16:0] result;
+    logic signed [16:0]full_sum;    
+    logic signed[8:0] expected;
+    logic signed [8:0] result;
 
     begin 
         in1 = a;
         in2 = b;
         #1 ;
 
-        expected = $signed(a) +$signed(b);
+        full_sum = $signed({{8{a[7]}}, a}) +$signed(b);
         result = {carry,sum};
+
+        expected = full_sum[15:7];
+        if (full_sum[6])
+            expected = expected +1;
 
         if (result != expected) begin 
             $display ("Error \n Expected : %0d + %0d = 0%d \n Obtained : %0d + %0d = %0d",a,b, expected, in1,in2,result );

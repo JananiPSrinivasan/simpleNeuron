@@ -28,7 +28,7 @@ module accumulate (
 
     always_ff @( posedge clk ) begin 
         if (rst) begin
-            accumulator <= 16'sd0;
+            accumulator <= 8'sd0;
         end        
         else if (en) begin
             accumulator <= new_sum;
