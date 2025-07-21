@@ -2,37 +2,58 @@
 
 module accumulator_tb();
 
-
     logic clk;
     logic rst;
     logic en;
 
-    logic signed [0:7] x;
-    logic signed [0:7] weight;
-    logic signed [0:7] bias;
-    logic signed [0:7] y;
+    logic signed [7:0] x;
+    logic signed [7:0] weight;
+    logic signed [7:0] bias;
+    logic signed [7:0] accu;
 
-    logic signed [15:0] mul_out;
-    logic signed [15:0] add_out;
-
-    accumulator dut (
+    // Instantiate DUT
+    accumulate dut (
+        .clk(clk),
+        .rst(rst),
+        .en(en),
         .x(x),
         .weight(weight),
         .bias(bias),
-        .accu(y),
-        .clk(clk),
-        .rst(rst),
-        .en(en)
+        .accu(accu)
     );
 
-    task test(
-        input logic signed[7:0]a, 
-        input logic signed[7:0]b,
-        input logic signed [7:0]c 
-    );
+    // Clock generation: 10ns period
+    always #5 clk = ~clk;
 
-    logic [7:0] 
+    initial begin
+        $display("Starting single accumulate test...");
+        clk = 0;
+        rst = 1;
+        en = 0;
+        x = 0;
+        weight = 0;
+        bias = 0;
 
-    endtask
+        // Initial reset
+        #10;
+        rst = 0;
+
+        // Test values
+        x = 8'sd5;
+        weight = 8'sd2;
+        bias = 8'sd1;
+        en = 1;
+
+        // One accumulate operation
+        @(posedge clk); // capture inputs
+        @(posedge clk); // update accumulator
+        #1;
+        en = 0;
+
+        $display("Inputs: x=%0d, weight=%0d, bias=%0d", x, weight, bias);
+        $display("Accumulator output: accu = %0d", accu);
+
+        $finish;
+    end
 
 endmodule

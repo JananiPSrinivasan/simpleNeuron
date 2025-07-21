@@ -2,8 +2,8 @@
 
 module adder_tb();
 
-logic signed [7:0]  in1; 
-logic signed [15:0] in2;
+logic signed [15:0]  in1; 
+logic signed [7:0] in2;
 logic signed[7:0]  sum;
 logic signed carry;
 
@@ -14,8 +14,8 @@ adder dut (
     .carry(carry)
 );
 
-task test(input logic signed[7:0]a,
-          input logic signed [15:0]b
+task test(input logic signed[15:0]a,
+          input logic signed [7:0]b
         );
 
     logic signed [16:0]full_sum;    
@@ -27,7 +27,7 @@ task test(input logic signed[7:0]a,
         in2 = b;
         #1 ;
 
-        full_sum = $signed({{8{a[7]}}, a}) +$signed(b);
+        full_sum = $signed({{8{b[7]}}, b}) +$signed(a);
         result = {carry,sum};
 
         expected = full_sum[15:7];
