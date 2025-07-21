@@ -42,18 +42,30 @@ module accumulator_tb();
         x = 8'sd5;
         weight = 8'sd2;
         bias = 8'sd1;
+
+        // Wait for 3 clock edges:
+        // 1. First posedge: Reset deasserted
+        // 2. Second posedge: Inputs captured, multiplier/adder compute
+        // 3. Third posedge: Accumulator updates
+        @(posedge clk); // Reset deasserted
+        @(posedge clk); // Inputs sampled, computation starts
         en = 1;
-
-        // One accumulate operation
-        @(posedge clk); // capture inputs
-        @(posedge clk); // update accumulator
-        #1;
+        @(posedge clk); // accu updates here
         en = 0;
-
+        
+        #1; // Small delay to see stable output
+        
         $display("Inputs: x=%0d, weight=%0d, bias=%0d", x, weight, bias);
         $display("Accumulator output: accu = %0d", accu);
 
-        $finish;
+        // Verify the result
+        if (accu !== 11) begin
+            $display("ERROR: Expected 11, got %0d", accu);
+            $finish(1);
+        end
+        else begin
+            $display("TEST PASSED");
+            $finish;
+        end
     end
-
 endmodule
