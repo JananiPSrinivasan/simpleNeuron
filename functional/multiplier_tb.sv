@@ -4,7 +4,7 @@ module multiplier_tb();
 
     logic signed [7:0] weight;
     logic signed [7:0] in;
-    logic signed [7:0] out;
+    logic signed [15:0] out;
 
     multiplier dut (
         .weight(weight),
@@ -18,7 +18,7 @@ module multiplier_tb();
         input logic signed [7:0]b
         );
         logic signed [15:0] temp;
-        logic signed[7:0] expected;
+        logic signed[15:0] expected;
 
         begin
             test_num ++;
@@ -28,7 +28,7 @@ module multiplier_tb();
             #1;
 
             temp = a*b;
-            expected = temp [15:7] ;
+            expected = temp;
             
             if (out != expected) begin
                 $display ("Testcase Failed (%0d/%0d) \n Expected : %0d*%0d = %0d\n Obtained : %0d*%0d = %0d",test_num, total_tests, a,b,expected,weight,in,out);
