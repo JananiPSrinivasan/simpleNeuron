@@ -1,16 +1,35 @@
-# RTL Design of a Simple Neuron with Formal Verification
+# Neuron Hardware Module
 
-This project implements a **simple neuron** module in **SystemVerilog**. The neuron performs a weighted sum of input values, adds a bias, and passes the result through a **tanh activation function** using a lookup table (LUT) and using CORDIC algorithm. The design is modular, parameterized, and supports **formal verification** to ensure correctness.
+This project implements a hardware model of a **neuron** using Verilog. The neuron uses a **Multiply-and-Accumulate (MAC)** logic to compute weighted inputs, adds a bias, and finally multiplies the result with an activation factor to produce the output.
+
+---
+
+## Neuron Logic
+
+A neuron performs the following operations:
+
+temp = (input0 * weight0 + input1 * weight1 + input2 * weight2) + bias
+y = activation_factor * temp
+
+
+This is logically split into **three main stages**:
+
+1. **Multiply** each input with its corresponding weight.
+2. **Accumulate** the products in hardware.
+3. **Add** the bias to the final accumulated result.
+
+Finally, the result (`temp`) is passed through an **activation stage**, where it is multiplied by an activation factor to produce the final output `y`.
 
 ---
 
-## Problem Statement
+## Hardware Mapping
 
-Design and implement a neuron module in SystemVerilog that:
-- Accepts a vector of input values and a corresponding set of weights (including a bias)
-- Computes the weighted sum of inputs + bias
-- Passes the result through a tanh function implemented via a ROM-based LUT / cordic algorithm
-- Outputs an 8-bit activated result (range: 0 to 255)
-- Supports formal verification using industry-standard tools
+To implement this behavior in hardware, the design uses **four key modules**:
 
----
+- `multiplier`: Multiplies each input with its weight.
+- `accumulator`: Accumulates the product of inputs and weights over multiple cycles or instances.
+- `adder`: Adds the bias to the accumulated result.
+- `output`: Multiplies the final value with an activation factor (scaled activation output).
+
+Each of these modules can be instantiated and pipelined to build more complex multi-neuron or multi-layer networks.
+
