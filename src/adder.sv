@@ -1,27 +1,23 @@
-module adder(
-    input  logic signed [15:0] in1,
-    input  logic signed [7:0] in2,
-    output logic signed [7:0] sum,
-    output logic carry  
+module adder (
+    input  logic                clk,
+    input  logic                rst_n,
+    input  logic signed [15:0]  in1,
+    input  logic signed [7:0]   in2,
+    output logic signed [15:0]  sum,
+    output logic                carry
 );
 
-    logic signed [15:0]in2_ext;
-    assign in2_ext = {{8{in2[7]}},in2};  
-    logic signed [8:0] trunc;
+    wire signed [15:0] sign_ext = {{8{in2[7]}}, in2};
     logic signed [16:0] temp;
-    
-    always@(*) begin
-        temp =  in1 + in2_ext ; 
-        trunc = temp[15:7];
-        if (temp[6]) begin
-            sum[7:0] = trunc+1;
-        end else begin
-            sum[7:0] = trunc;
-    end
-    //assign carry = temp[16]; 
-    end
 
-
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n)
+            temp <= 17'sd0;
+        else
+            temp <= in1 + sign_ext;
+    end
+   
+    assign sum   = temp[15:0];
     assign carry = temp[16];
 
 endmodule

@@ -19,7 +19,7 @@
 
     To map it to hardware, 
     the temp is done in three stages
-        1. multipy the inpur with the bias
+        1. multipy the input with the bias
         2. accumulate it in hardware
         3. Add it with bias
     then,
@@ -43,13 +43,13 @@ module neuron(
     output logic signed [7:0] y // output
 ); 
     // wires to propogate through modules
-    logic signed [15:0] accumulated;
-    logic signed [7:0] partial_output;
-    logic signed [7:0] activated_output;
+    logic signed [15:0] accumulated; // accumulated output -> accumulated register -> adder module
+    logic signed [7:0] partial_output; // adder_partial_output -> partial_output register -> activation module 
+    logic signed [7:0] activated_output; // activated_output -> y
 
     // registers to store the intermidiate values
     logic signed [15:0] accumulated_reg;
-    logic signed [7:0] partial_output_reg;
+    logic signed [16:0] partial_output_reg;
     logic signed [7:0] activated_output_reg;
 
     mac mac_u(
@@ -86,7 +86,7 @@ module neuron(
             partial_output_reg <= 8'sd0;
         end
         else begin 
-            #1;
+            #2;
             partial_output_reg <= partial_output;
         end
     end
