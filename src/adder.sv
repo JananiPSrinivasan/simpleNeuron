@@ -6,7 +6,7 @@ module adder (
     input  logic signed [7:0]   in2,
     output logic signed [15:0]  sum,
     output logic                carry,
-    output logig signed [16:0] total
+    output logic signed [16:0] total
 );
 
     wire signed [15:0] sign_ext = {{8{in2[7]}}, in2};

@@ -39,13 +39,13 @@ module neuron(
     input logic signed [7:0] x, // input
     input logic signed [7:0] w, // weights
     input logic signed [7:0] bias, // bias
-    input logic signed [7:0] act, // activation factor
-    output logic signed [7:0] y // output
+    //input logic signed [7:0] act, // activation factor
+    output logic signed [16:0] y // output
 ); 
     // wires to propogate through modules
     logic signed [15:0] accumulated; // accumulated output -> accumulated register -> adder module
-    logic signed [7:0] partial_output; // adder_partial_output -> partial_output register -> activation module 
-    logic signed [7:0] activated_output; // activated_output -> y
+    logic signed [16:0] partial_output; // adder_partial_output -> partial_output register -> activation module 
+    logic signed [16:0] activated_output; // activated_output -> y
 
     // registers to store the intermidiate values
     logic signed [15:0] accumulated_reg;
@@ -65,7 +65,7 @@ module neuron(
         .total(partial_output)
     );
 
-    activation act_u(
+    activate act_u(
         .in(partial_output_reg),
         .out(activated_output)
     );

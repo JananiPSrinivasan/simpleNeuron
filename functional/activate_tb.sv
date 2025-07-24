@@ -28,11 +28,11 @@ module activate_tb();
 
     // A simple task to apply one test vector and check the result
     task automatic test;
-        input  logic signed [16:0] a;
+        input  logic signed [7:0] a;
         logic signed [16:0] expected;
         begin
             total_tests++;
-
+           
             // compute expected ReLU in the testbench
             if (a[16])
                 expected = 17'sd0;

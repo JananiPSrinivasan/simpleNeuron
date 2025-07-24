@@ -32,7 +32,7 @@ module activate (
 );
 
     logic signed [16:0] temp;
-
+    logic signed [16:0] in_ext = in;
     always @ (posedge clk) begin 
         if(!rst_n) begin 
            temp <= 16'sd0;
