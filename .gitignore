@@ -1,0 +1,5 @@
+*.o
+*.vcd
+mac_tb
+adder_tb
+simv
