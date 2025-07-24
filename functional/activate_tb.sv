@@ -5,8 +5,8 @@ module activate_tb();
     // DUT I/O
     logic               clk;
     logic               rst_n;
-    logic signed [16:0] in;
-    logic signed [16:0] out;
+    logic signed [17:0] in;
+    logic signed [17:0] out;
 
     // Counters
     integer total_tests   = 0;
@@ -27,15 +27,17 @@ module activate_tb();
     end
 
     // A simple task to apply one test vector and check the result
-    task automatic test;
-        input  logic signed [7:0] a;
-        logic signed [16:0] expected;
+    task test(
+        input logic signed [17:0] a
+        
+    );
+        logic signed [17:0] expected;
         begin
             total_tests++;
            
             // compute expected ReLU in the testbench
             if (a[16])
-                expected = 17'sd0;
+                expected = 18'sd0;
             else
                 expected = a;
 

@@ -35,44 +35,50 @@
 
 module neuron(
     input logic clk,
-    input logic rst,
+    input logic rst_n,
     input logic signed [7:0] x, // input
     input logic signed [7:0] w, // weights
     input logic signed [7:0] bias, // bias
-    //input logic signed [7:0] act, // activation factor
-    output logic signed [16:0] y // output
+    output logic signed [17:0] y // output
 ); 
     // wires to propogate through modules
-    logic signed [15:0] accumulated; // accumulated output -> accumulated register -> adder module
-    logic signed [16:0] partial_output; // adder_partial_output -> partial_output register -> activation module 
-    logic signed [16:0] activated_output; // activated_output -> y
+    logic signed [16:0] accumulated; // accumulated output -> accumulated register -> adder module
+    logic signed [17:0] partial_output; // adder_partial_output -> partial_output register -> activation module 
+    logic signed [17:0] activated_output; // activated_output -> y
 
     // registers to store the intermidiate values
-    logic signed [15:0] accumulated_reg;
-    logic signed [16:0] partial_output_reg;
-    logic signed [16:0] activated_output_reg;
+    logic signed [16:0] accumulated_reg;
+    logic signed [17:0] partial_output_reg;
+    logic signed [17:0] activated_output_reg;
 
     mac mac_u(
-        .x(x),
-        .weight(w),
-        .out(accumulated)
-    );
-
+    .clk(clk),
+    .rst_n(rst_n),
+    .x(x),
+    .weight(w),
+    .out(accumulated)
+);
 
     adder add_u(
+        .clk(clk),
+        .rst_n(rst_n),
         .in1(accumulated_reg),
         .in2(bias),
+        .sum(),         // not used
+        .carry(),       // not used
         .total(partial_output)
     );
 
     activate act_u(
+        .clk(clk),
+        .rst_n(rst_n),
         .in(partial_output_reg),
         .out(activated_output)
-    );
+);
 
 
-    always @(posedge clk or negedge rst) begin
-        if (!rst) begin 
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin 
             accumulated_reg <= 16'sd0;
         end
         else begin 
@@ -81,9 +87,9 @@ module neuron(
         end
     end
 
-    always @(posedge clk or negedge rst) begin
-        if (!rst) begin 
-            partial_output_reg <= 8'sd0;
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin 
+            partial_output_reg <= 17'sd0;
         end
         else begin 
             //#2;
@@ -91,9 +97,9 @@ module neuron(
         end
     end
 
-    always @(posedge clk or negedge rst) begin
-        if (!rst) begin 
-            activated_output_reg <= 8'sd0;
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin 
+            activated_output_reg <= 17'sd0;
         end
         else begin 
             activated_output_reg <= activated_output;

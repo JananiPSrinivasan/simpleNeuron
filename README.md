@@ -3,7 +3,7 @@
 This project implements a hardware model of a **neuron** using Verilog. The neuron uses a **Multiply-and-Accumulate (MAC)** logic to compute weighted inputs, adds a bias, and finally multiplies the result with an activation factor to produce the output.
 
 ---
-
+![alt text](images/image.png)
 ## Neuron Logic
 
 A neuron performs the following operations:

@@ -5,13 +5,13 @@ module adder_tb;
     // Testbench signals
     logic clk;
     logic rst_n;
-    logic signed [15:0] in1;
+    logic signed [16:0] in1;
     logic signed [7:0]  in2;
-    logic signed [15:0] sum;
+    logic signed [16:0] sum;
     logic carry;
 
     // Expected output
-    logic signed [15:0] expected_sum;
+    logic signed [16:0] expected_sum;
     logic expected_carry;
 
     // Counters
@@ -33,16 +33,16 @@ module adder_tb;
 
     // Apply inputs and check results after clock
     task automatic run_test(
-        input logic signed [15:0] a,
+        input logic signed [16:0] a,
         input logic signed [7:0]  b
     );
-        logic signed [16:0] temp;
+        logic signed [17:0] temp;
         begin
             in1 = a;
             in2 = b;
-            temp = a + $signed({{8{b[7]}}, b}); // manual sign extension
-            expected_sum = temp[15:0];
-            expected_carry = temp[16];
+            temp = a + $signed({{9{b[7]}}, b}); // manual sign extension
+            expected_sum = temp[16:0];
+            expected_carry = temp[17];
 
             @(posedge clk); #1; // Wait for result update
 

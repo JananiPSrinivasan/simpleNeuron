@@ -6,7 +6,7 @@ module mac_tb();
     logic rst_n;
     logic signed [7:0] weight;
     logic signed [7:0] in;
-    logic signed [15:0] out;
+    logic signed [16:0] out;
 
     mac dut (
         .clk(clk),
@@ -18,7 +18,7 @@ module mac_tb();
 
     integer test_num = 0;
     integer total_tests = 0;
-    logic signed [15:0] expected;
+    logic signed [16:0] expected;
 
     always #5 clk = ~clk;
 
@@ -34,7 +34,8 @@ module mac_tb();
             weight = b;
             // Wait for the next rising edge of the clock — this is when the MAC output updates
             @(posedge clk); 
-            #1; // wait for an delay for signals to stabilize
+            #1; // wait for an delay for signals to stabilize 
+            // if not this delay, metastable state and first output is corrupted.
             expected = a*b + expected ; // Compute expected output
 
             if (out !== expected) begin

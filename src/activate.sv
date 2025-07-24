@@ -27,18 +27,18 @@ if the sign bit is negative i.e 1, the y = 0;\
 module activate (
     input logic clk, 
     input logic rst_n,
-    input logic signed [16:0] in,
-    output logic signed [16:0] out
+    input logic signed [17:0] in,
+    output logic signed [17:0] out
 );
 
-    logic signed [16:0] temp;
-    logic signed [16:0] in_ext = in;
+    logic signed [17:0] temp;
+    logic signed [17:0] in_ext = in;
     always @ (posedge clk) begin 
         if(!rst_n) begin 
-           temp <= 16'sd0;
+           temp <= 17'sd0;
         end else begin 
-             if (in[16]) begin 
-                temp <= 17'sd0;
+             if (in[17]) begin 
+                temp <= 18'sd0;
             end
             else begin 
                 temp <= in;

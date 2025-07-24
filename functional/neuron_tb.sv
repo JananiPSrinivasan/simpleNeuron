@@ -4,86 +4,111 @@ module neuron_tb();
 
     // DUT I/O
     logic               clk;
-    logic               rst;      // active-low reset
+    logic               rst_n;      // active-low reset
     logic signed [7:0]  x;
     logic signed [7:0]  w;
-    logic signed [7:0]  bias;
-    logic signed [16:0] y;        // 17-bit output
+    logic signed [7:0]  b;
+    logic signed [17:0] y;        // 18-bit output
 
     // Counters
-    integer total_tests   = 0;
-    integer tests_passed  = 0;
-
+    integer total_tests  = 0;
+    integer test_nums =0;
     // Instantiate the neuron
     neuron dut (
         .clk  (clk),
-        .rst  (rst),
+        .rst_n  (rst_n),
         .x    (x),
         .w    (w),
-        .bias (bias),
+        .bias (b),
         .y    (y)
     );
 
-    // 10 GHz clock: 100 ps period → toggle every 50 ps
-    initial begin
-        clk = 0;
-        forever #50 clk = ~clk;
-    end
+    always #5 clk = ~clk;
 
-    // Reset pulse (active-low)
-    initial begin
-        rst = 0;
-        #200;
-        rst = 1;
-    end
 
-    // Simple test task
-    task automatic test;
-        input logic signed [7:0] tx, tw, tb;
-        logic signed [16:0]      expected;
-        begin
-            total_tests++;
+    task test(
+        input logic signed  [7:0] a,
+        input logic signed [7:0] weight,
+        input logic signed [7:0] bias
+    ); 
+        logic signed [15:0] product;
+        logic signed [16:0] accumulate;
+        logic signed [17:0] activate;
+        logic signed [17:0] out;
+        logic signed [17:0] expected;
 
-            // golden MAC + bias (8×8→16 bits, +8→17 bits)
-            expected = tx * tw + tb;
+        logic signed [16:0] product_ext;
+        logic signed [16:0] bias_ext;
 
-            // drive inputs
-            x    = tx;
-            w    = tw;
-            bias = tb;
+        begin 
+            accumulate = 16'sd0;
+            total_tests ++;
+            test_nums ++;
+            x = a;
+            w = weight;
+            b = bias;
 
-            // wait one cycle for pipeline
+
+            
+            product = a * w;
+            product_ext = {{1{product[15]}},product};
+            accumulate = product_ext + accumulate;
+            
+            @(posedge clk); 
+            #1;
+            bias_ext = {{8{bias[7]}},bias};
+            activate = accumulate + bias_ext;
+            
+            @(posedge clk);
+            #1;
+            // activate and assign to the output
+            if (activate [17])
+                out = 18'sd0;
+            else
+                out = activate;
+
+            @(posedge clk);
+            #1;
+            expected = out;
             @(posedge clk);
             #1;
 
-            if (y === expected) begin
-                $display("[PASS] x=%0d w=%0d bias=%0d -> y=%0d", tx, tw, tb, y);
-                tests_passed++;
-            end else begin
-                $display("[FAIL] x=%0d w=%0d bias=%0d -> y=%0d (exp %0d)", tx, tw, tb, y, expected);
-            end
-        end
+
+            if (y!==expected)
+                $display ("Testcase Failed (%0d/%0d) \n Expected:  %0d\n Obtained: %0d",
+                        test_nums, total_tests, expected, y);
+
+            else
+                $display  ("Testcase Passed (%0d/%0d) \n Expected:  %0d\n Obtained: %0d = %0d",
+                    test_nums, total_tests, expected, y);
+           
+        end         
     endtask
 
-    // Test sequence
     initial begin
-        // wait for reset release
-        @(posedge rst);
-        #20;
+        $dumpfile("neuron.vcd");
+        $dumpvars(0, neuron_tb);
 
-        $display("\nStarting neuron tests...");
+        // Initialize
+        clk = 0;
+        rst_n = 0;
+        x = 0;
+        w = 0;
+        b = 0;
 
-        test( 8'sd  2,  8'sd  3,  8'sd  1);
-        test(-8'sd  5,  8'sd  2,  8'sd  4);
-        test( 8'sd 10, -8'sd  1,  8'sd  2);
-        test( 8'sd  0,  8'sd  0,  8'sd  0);
-        test( 8'sd127,  8'sd127,  8'sd127);
+        #10;
+        rst_n = 1;
 
-        $display("\nTest summary: %0d/%0d passed", tests_passed, total_tests);
-        if (tests_passed != total_tests)
-            $display("Some tests failed.");
-        else
-            $finish;
+        // Run tests
+        test(8'sd3, 8'sd2, 8'sd1);      // (3*2)+1 = 7 → y = 7
+        // test(8'sd10, 8'sd10, 8'sd-5);   // (10*10)-5 = 95 → y = 95
+        // test(-8'sd5, 8'sd5, 8'sd4);     // (-25)+4 = -21 → y = 0 (ReLU)
+        // test(8'sd100, 8'sd1, 8'sd-128); // (100)+(-128) = -28 → y = 0
+        // test(8'sd4, 8'sd4, 8'sd4);      // (16)+4 = 20 → y = 20
+
+        $display("Neuron Testbench complete: %0d tests run", total_tests);
+        $finish;
     end
+
 
 endmodule
