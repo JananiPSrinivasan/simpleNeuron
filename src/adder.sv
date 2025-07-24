@@ -1,3 +1,4 @@
+`timescale 1ns/1ps
 module adder (
     input  logic                clk,
     input  logic                rst_n,
@@ -21,3 +22,4 @@ module adder (
     assign carry = temp[16];
 
 endmodule
+
