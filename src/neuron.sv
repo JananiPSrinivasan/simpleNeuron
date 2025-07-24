@@ -50,7 +50,7 @@ module neuron(
     // registers to store the intermidiate values
     logic signed [15:0] accumulated_reg;
     logic signed [16:0] partial_output_reg;
-    logic signed [7:0] activated_output_reg;
+    logic signed [16:0] activated_output_reg;
 
     mac mac_u(
         .x(x),
@@ -62,7 +62,7 @@ module neuron(
     adder add_u(
         .in1(accumulated_reg),
         .in2(bias),
-        .sum(partial_output)
+        .total(partial_output)
     );
 
     activation act_u(
@@ -76,7 +76,7 @@ module neuron(
             accumulated_reg <= 16'sd0;
         end
         else begin 
-            #1;
+            //#1;
             accumulated_reg <= accumulated;
         end
     end
@@ -86,7 +86,7 @@ module neuron(
             partial_output_reg <= 8'sd0;
         end
         else begin 
-            #2;
+            //#2;
             partial_output_reg <= partial_output;
         end
     end

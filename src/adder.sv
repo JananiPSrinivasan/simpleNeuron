@@ -5,7 +5,8 @@ module adder (
     input  logic signed [15:0]  in1,
     input  logic signed [7:0]   in2,
     output logic signed [15:0]  sum,
-    output logic                carry
+    output logic                carry,
+    output logig signed [16:0] total
 );
 
     wire signed [15:0] sign_ext = {{8{in2[7]}}, in2};
@@ -20,6 +21,7 @@ module adder (
    
     assign sum   = temp[15:0];
     assign carry = temp[16];
+    assign total = {temp[16], temp[15:0]};
 
 endmodule
 

@@ -26,10 +26,29 @@ Finally, the result (`temp`) is passed through an **activation stage**, where it
 
 To implement this behavior in hardware, the design uses **four key modules**:
 
-- `multiplier`: Multiplies each input with its weight.
-- `accumulator`: Accumulates the product of inputs and weights over multiple cycles or instances.
+- `mac`: Multiplies each input with its weight and accumulates the product of inputs and weights over multiple cycles or instances.
 - `adder`: Adds the bias to the accumulated result.
-- `output`: Multiplies the final value with an activation factor (scaled activation output).
+- `activate`: Multiplies the final value with an activation factor (scaled activation output).
+-`neuron` : 
 
 Each of these modules can be instantiated and pipelined to build more complex multi-neuron or multi-layer networks.
 
+## If this logic is so stright forward, why there are not much ML implementations on ASIC ?
+
+
+- If you observe closely, this architecture works well on **intergers**
+
+- ML models require Floating point computation (Real + Fractional part)
+
+- A Floating point 32 (FP32) occupies 32 bits in a memory
+
+- It has one sign bit, 8 exponent bits and 23 fractional bits
+
+- So In hardware, you have to compute for the exponent bits and the fractional bits seperately.
+
+- You need separate datapaths for the exponent and mantissa, plus a lot of glue logic to handle denormals, overflows, underflows, and IEEE-754 corner cases.
+
+- It becomes particularly hard on ASIC platforms due to the lack of limited availability of synthesisable open source IP cores for 
+ASIC
+
+- Some IP cores are available on FPGA platforms But translating those into TSMC-PDK-compatible, silicon-proven hard macros is a huge qualification project—and most fabs or IP vendors don’t just hand out synthesizable FP libraries for free.
