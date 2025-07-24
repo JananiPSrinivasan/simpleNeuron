@@ -1,4 +1,4 @@
-`timescale 1ps/1ps
+`timescale 1ns/1ps
 
 module mac_tb();
 
@@ -73,9 +73,15 @@ module mac_tb();
         test(8'sb01111111, 8'sb01111111); // 127 * 127
         test(8'sb00000000, 8'sb00000000); // 0 * 0
 
+        `ifdef VERILATOR
+            test(-8'sd5, 8'sd3);
+            test(8'sd2, -8'sd2);
+        `else
+
         repeat(10) begin
             test($signed($urandom_range(-128, 127)), $signed($urandom_range(-128, 127)));
         end
+        `endif 
 
         $display ("Testbench Complete");
         $finish;

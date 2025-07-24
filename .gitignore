@@ -3,3 +3,10 @@
 mac_tb
 adder_tb
 simv
+.history
+.log
+*.d
+/cov_work
+/xcelium.d
+xrun.history
+xrun.log
