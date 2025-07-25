@@ -47,39 +47,31 @@ module neuron_tb();
             x = a;
             w = weight;
             b = bias;
-
-
             
             product = a * w;
             product_ext = {{1{product[15]}},product};
             accumulate = product_ext + accumulate;
-            
-            @(posedge clk); 
             #1;
-            bias_ext = {{8{bias[7]}},bias};
+            bias_ext = {{9{bias[7]}},bias};
             activate = accumulate + bias_ext;
-            
-            @(posedge clk);
             #1;
             // activate and assign to the output
             if (activate [17])
                 out = 18'sd0;
             else
                 out = activate;
-
-            @(posedge clk);
             #1;
             expected = out;
-            @(posedge clk);
+            
             #1;
 
-
+            repeat (6) @(posedge clk); #1;
             if (y!==expected)
                 $display ("Testcase Failed (%0d/%0d) \n Expected:  %0d\n Obtained: %0d",
                         test_nums, total_tests, expected, y);
 
             else
-                $display  ("Testcase Passed (%0d/%0d) \n Expected:  %0d\n Obtained: %0d = %0d",
+                $display  ("Testcase Passed (%0d/%0d) \n Expected:  %0d\n Obtained: %0d ",
                     test_nums, total_tests, expected, y);
            
         end         
@@ -96,15 +88,36 @@ module neuron_tb();
         w = 0;
         b = 0;
 
-        #10;
-        rst_n = 1;
+       #10;
+       rst_n = 1;
 
         // Run tests
-        test(8'sd3, 8'sd2, 8'sd1);      // (3*2)+1 = 7 → y = 7
-        // test(8'sd10, 8'sd10, 8'sd-5);   // (10*10)-5 = 95 → y = 95
-        // test(-8'sd5, 8'sd5, 8'sd4);     // (-25)+4 = -21 → y = 0 (ReLU)
-        // test(8'sd100, 8'sd1, 8'sd-128); // (100)+(-128) = -28 → y = 0
-        // test(8'sd4, 8'sd4, 8'sd4);      // (16)+4 = 20 → y = 20
+        test(8'sb00000011, 8'sb00000010, 8'sb00000001);                 //  3*2 + 1 = 7 → y = 7
+        #1;
+        rst_n = 0;
+        #1;
+        rst_n = 1;
+
+        test(8'sb00001010, 8'sb00001010, 8'sb11111011);              // 10*10 - 5 = 95 → y = 95
+        #1;
+        rst_n = 0;
+        #1;
+        rst_n = 1;
+
+        test(8'sb11111011, 8'sb00000101, 8'sb00000100);              // -5*5 + 4 = -21 → y = 0 (ReLU)
+        #1;
+        rst_n = 0;
+        #1;
+        rst_n = 1;
+
+        test(8'sb01100100, 8'sb00000001, 8'sb10000000);              // 100 - 128 = -28 → y = 0 (ReLU)
+        #1;
+        rst_n = 0;
+        #1;
+        rst_n = 1;
+
+        test(8'sb00000100, 8'sb00000100, 8'sb00000100);                // 4*4 + 4 = 20 → y = 20
+
 
         $display("Neuron Testbench complete: %0d tests run", total_tests);
         $finish;

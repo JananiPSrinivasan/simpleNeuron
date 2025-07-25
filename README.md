@@ -33,6 +33,22 @@ To implement this behavior in hardware, the design uses **four key modules**:
 
 Each of these modules can be instantiated and pipelined to build more complex multi-neuron or multi-layer networks.
 
+## The code works !!
+![alt text](images/tb_op.png)
+
+## My Reflections while doing this project 
+
+### Before Jumping into the code
+- Sit and think through the logic, use pen and paper to name all the nets
+- Calculate bit widths properly. I spent lot of time trying to fix the bit width after each module 
+
+### When you code
+- Use proper naming conventions and aprropriate comments.
+- Understand the purpose of each and every line when typing. 
+- Have proper justifications for each logic you have written
+- write test benches for each module and test it exhaustively
+
+
 ## If this logic is so stright forward, why there are not much ML implementations on ASIC ?
 
 
