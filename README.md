@@ -8,8 +8,7 @@ This project implements a hardware model of a **neuron** using Verilog. The neur
 
 A neuron performs the following operations:
 
-temp = (input0 * weight0 + input1 * weight1 + input2 * weight2) + bias
-y = activation_factor * temp
+y = max[(input x weight +bias),0]
 
 
 This is logically split into **three main stages**:
@@ -18,7 +17,8 @@ This is logically split into **three main stages**:
 2. **Accumulate** the products in hardware.
 3. **Add** the bias to the final accumulated result.
 
-Finally, the result (`temp`) is passed through an **activation stage**, where it is multiplied by an activation factor to produce the final output `y`.
+Finally, the result is passed through an **activation stage**, where it compares the result and zero. 
+If the result is 0 or negative the output y is zero. If not the result is assigned to the output.
 
 ---
 
