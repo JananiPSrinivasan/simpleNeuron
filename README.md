@@ -19,7 +19,6 @@ This is logically split into **three main stages**:
 
 Finally, the result is passed through an **activation stage**, where it compares the result and zero. 
 If the result is 0 or negative the output y is zero. If not the result is assigned to the output.
-
 ---
 
 ## Hardware Mapping
@@ -32,6 +31,9 @@ To implement this behavior in hardware, the design uses **four key modules**:
 -`neuron` : 
 
 Each of these modules can be instantiated and pipelined to build more complex multi-neuron or multi-layer networks.
+
+![alt text](images/neuron.png)
+![alt text](images/hardware.png)
 
 ## The code works !!
 ![alt text](images/tb_op.png)
