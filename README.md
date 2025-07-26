@@ -19,6 +19,7 @@ This is logically split into **three main stages**:
 
 Finally, the result is passed through an **activation stage**, where it compares the result and zero. 
 If the result is 0 or negative the output y is zero. If not the result is assigned to the output.
+
 ---
 
 ## Hardware Mapping
