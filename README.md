@@ -38,6 +38,10 @@ Each of these modules can be instantiated and pipelined to build more complex mu
 
 ## The code works !!
 ![alt text](images/tb_op.png)
+![alt text](images/wave.png)
+![alt text](images/schematic.png) 
+![alt text](images/synth.png) 
+![alt text](images/utilisation.png) 
 
 ## My Reflections while doing this project 
 
