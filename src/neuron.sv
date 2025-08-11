@@ -1,64 +1,50 @@
-/*
-    A neuron uses multiply and accumulate logic for calculating the weights with  the inputs and then add the 
-    bias to it.
-
-    So, to think of it logically if we have m layers, and each layer has n neurons, 
-    the bias has to be applied to the sum of all n neurons in an m layer
-
-    If we take a particular neuron wich has to recieve the weights and input from three other neurons, then 
-    assume temp to be the temporary output  from one particular neuron thus 
-    
-    temp = (input0 * weight0 + input1 * weight1 + input2*weight2  )+bias
-
-    it is this temp which passes through the ativation funtion
-
-    so output y will be
-
-    y = activation factor * temp 
-
-
-    To map it to hardware, 
-    the temp is done in three stages
-        1. multipy the input with the bias
-        2. accumulate it in hardware
-        3. Add it with bias
-    then,
-    output = y * temp;
-
-    to build this we will use four modules
-    multiplier - to multiply the inputs with weight
-    accumulator - to accumulate the total inputs
-    adder - to sum with the bias
-    output - multipy activation with adder 
-      
-*/
-
 module neuron(
     input logic clk,
     input logic rst_n,
-    input logic signed [7:0] x, // input
-    input logic signed [7:0] w, // weights
-    input logic signed [7:0] bias, // bias
-    output logic signed [17:0] y // output
+    input logic signed [7:0] x,       // input
+    input logic signed [7:0] w,       // weights
+    input logic signed [7:0] bias,    // bias
+    output logic signed [17:0] y      // output
 ); 
-    // wires to propogate through modules
-    logic signed [16:0] accumulated; // accumulated output -> accumulated register -> adder module
-    logic signed [17:0] partial_output; // adder_partial_output -> partial_output register -> activation module 
-    logic signed [17:0] activated_output; // activated_output -> y
+    // Wires between modules
+    logic signed [16:0] accumulated;         // mac output
+    logic signed [17:0] partial_output;      // adder output
+    logic signed [17:0] activated_output;    // activate output
 
-    // registers to store the intermidiate values
-    logic signed [16:0] accumulated_reg;
-    logic signed [17:0] partial_output_reg;
-    logic signed [17:0] activated_output_reg;
+    // Registers for pipelining
+    logic signed [7:0] x_reg, w_reg;                 // stage 1 registers
+    logic signed [16:0] accumulated_reg;            // stage 2
+    logic signed [17:0] partial_output_reg;         // stage 3
+    logic signed [17:0] activated_output_reg;       // stage 4
 
+    // Stage 1: Register inputs
+    always_ff @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            x_reg <= 8'sd0;
+            w_reg <= 8'sd0;
+        end else begin
+            x_reg <= x;
+            w_reg <= w;
+        end
+    end
+
+    // Stage 2: Multiply (MAC)
     mac mac_u(
-    .clk(clk),
-    .rst_n(rst_n),
-    .x(x),
-    .weight(w),
-    .out(accumulated)
-);
+        .clk(clk),
+        .rst_n(rst_n),
+        .x(x_reg),
+        .weight(w_reg),
+        .out(accumulated)
+    );
 
+    always_ff @(posedge clk or negedge rst_n) begin
+        if (!rst_n)
+            accumulated_reg <= 17'sd0;
+        else
+            accumulated_reg <= accumulated;
+    end
+
+    // Stage 3: Add bias
     adder add_u(
         .clk(clk),
         .rst_n(rst_n),
@@ -69,44 +55,28 @@ module neuron(
         .total(partial_output)
     );
 
+    always_ff @(posedge clk or negedge rst_n) begin
+        if (!rst_n)
+            partial_output_reg <= 17'sd0;
+        else
+            partial_output_reg <= partial_output;
+    end
+
+    // Stage 4: Activation
     activate act_u(
         .clk(clk),
         .rst_n(rst_n),
         .in(partial_output_reg),
         .out(activated_output)
-);
+    );
 
-
-    always @(posedge clk or negedge rst_n) begin
-        if (!rst_n) begin 
-            accumulated_reg <= 16'sd0;
-        end
-        else begin 
-            //#1;
-            accumulated_reg <= accumulated;
-        end
-    end
-
-    always @(posedge clk or negedge rst_n) begin
-        if (!rst_n) begin 
-            partial_output_reg <= 17'sd0;
-        end
-        else begin 
-            //#2;
-            partial_output_reg <= partial_output;
-        end
-    end
-
-    always @(posedge clk or negedge rst_n) begin
-        if (!rst_n) begin 
+    always_ff @(posedge clk or negedge rst_n) begin
+        if (!rst_n)
             activated_output_reg <= 17'sd0;
-        end
-        else begin 
+        else
             activated_output_reg <= activated_output;
-        end
     end
 
     assign y = activated_output_reg;
-
 
 endmodule
