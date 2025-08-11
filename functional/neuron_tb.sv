@@ -65,7 +65,7 @@ module neuron_tb();
             
             #1;
 
-            repeat (6) @(posedge clk); #1;
+            repeat (7) @(posedge clk); #1;
             if (y!==expected)
                 $display ("Testcase Failed (%0d/%0d) \n Expected:  %0d\n Obtained: %0d",
                         test_nums, total_tests, expected, y);
