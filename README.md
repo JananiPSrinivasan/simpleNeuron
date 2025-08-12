@@ -33,16 +33,68 @@ To implement this behavior in hardware, the design uses **four key modules**:
 
 Each of these modules can be instantiated and pipelined to build more complex multi-neuron or multi-layer networks.
 
-![alt text](images/neuron.png)
-![alt text](images/hardware.png)
+
+
 
 ## The code works !!
 ![alt text](images/tb_op.png)
 ![alt text](images/wave.png)
-![alt text](images/schematic.png) 
-![alt text](images/synth.png) 
-![alt text](images/utilisation.png) 
+![alt text](images/rtl_schematic.png) 
+![alt text](images/synthesis_schematic.png) 
 
+
+## Design Optimization and IP Packaging
+
+### Constraint-Driven Optimization
+
+To ensure realistic power and timing analysis, I wrote and applied an `.xdc` (Xilinx Design Constraints) file that specified:
+
+- **Clock period** (`create_clock`) for timing analysis
+- **Input delays** (`set_input_delay`) to model external signal behavior
+- **Switching activity** (`set_switching_activity`) on input and internal nets to prevent overestimation
+- **Load/driving characteristics** on I/Os
+
+This reduced Vivado’s reliance on default assumptions, allowing for much more **accurate analysis**.
+
+---
+
+### Timing Closure Achieved
+
+After applying the constraints, I performed synthesis and implementation. The results showed:
+
+- **Setup timing met** with Worst Negative Slack (WNS) > 4.9 ns
+- **Hold timing met** with Worst Hold Slack (WHS) > 0.14 ns
+- **Pulse width timing met** with Worst Pulse Width Slack (WPWS) > 4.6 ns
+
+No timing violations were reported, ensuring a clean and efficient design pipeline.
+
+---
+
+### Power Optimization
+
+Initial power estimate (due to missing constraints):  
+**15.2W** — most of it incorrectly attributed to dynamic I/O.
+
+After applying `.xdc` and re-running implementation:  
+**0.089W** total on-chip power  
+- Only **8 mW** of dynamic power  
+- I/O dynamic reduced from **12.8W ➝ 5 mW**  
+- Accurate estimation with high confidence level
+
+---
+
+### IP Packaging
+
+After verifying functionality and optimizing timing/power, I used Vivado's **IP Packager** to package the `neuron` module as a reusable IP core.
+
+Steps followed:
+1. Verified all RTL modules (`mac`, `adder`, `activate`, `neuron`) as part of design sources.
+2. Set `neuron.sv` as the top module with defined clock/reset interfaces.
+3. Used **Tools > Create and Package New IP** to generate a reusable IP core.
+4. Validated and exported it as a custom IP block for future integration.
+
+This allows the neuron hardware block to be reused in other Vivado designs and extended with AXI or other interfaces if needed.
+![alt text](images/IP.png)
 ## My Reflections while doing this project 
 
 ### Before Jumping into the code
